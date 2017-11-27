@@ -24,7 +24,7 @@ for i in range(10):
         if best_score < max(scores):
             best_score = max(scores)
 
-        data = str.format('{}  {}', (i+1)*3, best_score)
+        data = str.format('{}  {}', (j+1)*5, best_score)
         f.write(data)
         print(data)
 

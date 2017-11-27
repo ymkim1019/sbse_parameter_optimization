@@ -15,14 +15,22 @@ def evaluate(f,samples):
         scores.append(f(sample))
     return scores
 
+f = open("mnist_bo.txt", 'w')
 gpo = GPoptimizer(configs,f_mnist)
-
+best_score = 0
 initial_samples = gpo.random_sample(3)
-scores = evaluate(f_mnist,initial_samples)
+for i in range(300):
+    scores = evaluate(f_mnist,initial_samples)
+    if best_score < max(scores):
+        best_score = max(scores)
 
-gpo.update_model(initial_samples,scores) #새로운 데이터 추가
+    data = str.format('{}  {}', (i+1)*3, best_score)
+    f.write(data)
+    print(data)
 
-next_samples = gpo.random_sample(3)
-prob = gpo.compute_PI(next_samples)
+    gpo.update_model(initial_samples,scores) #새로운 데이터 추가
 
-print(prob)
+    next_samples = gpo.random_sample(3)
+    prob = gpo.compute_PI(next_samples)
+
+print(best_score)

@@ -14,22 +14,24 @@ def evaluate(f,samples):
         scores.append(f(sample))
     return scores
 
-f = open("fault_localization_bo.txt", 'w')
-gpo = GPoptimizer(configs,f_fault_localization)
-best_score = 0
-initial_samples = gpo.random_sample(3)
-for i in range(300):
-    scores = evaluate(f_fault_localization,initial_samples)
-    if best_score < max(scores):
-        best_score = max(scores)
+for i in range(10):
+    f = open(str.format("fault_localization_bo_{}.txt", i), 'w')
+    gpo = GPoptimizer(configs,f_mnist)
+    best_score = 0
+    initial_samples = gpo.random_sample(5)
+    for j in range(20):
+        scores = evaluate(f_mnist,initial_samples)
+        if best_score < max(scores):
+            best_score = max(scores)
 
-    data = str.format('{}  {}', (i+1)*3, best_score)
-    f.write(data)
-    print(data)
+        data = str.format('{}  {}', (i+1)*3, best_score)
+        f.write(data)
+        print(data)
 
-    gpo.update_model(initial_samples,scores) #새로운 데이터 추가
+        gpo.update_model(initial_samples,scores) #새로운 데이터 추가
 
-    next_samples = gpo.random_sample(3)
-    prob = gpo.compute_PI(next_samples)
+        next_samples = gpo.random_sample(5)
+        prob = gpo.compute_PI(next_samples)
 
-print(best_score)
+    print(best_score)
+    f.close()

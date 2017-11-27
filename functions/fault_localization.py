@@ -178,7 +178,7 @@ def f_fault_localization(params):
     mutpb = params[4]
 
     # dataset
-    dataset_path = os.getcwd() + '\\fluccs_data\\'
+    dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
     extension = 'csv'
     files = [i for i in glob.glob(dataset_path + '*.{}'.format(extension))]
     # randomly sample

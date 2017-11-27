@@ -168,7 +168,7 @@ def f_fault_localization(params):
     :rtype: float
     """
     num_of_features = 41
-    num_of_generations = 10
+    num_of_generations = 1
     num_of_samples = 5
 
     max_tree_depth = params[0]
@@ -247,7 +247,7 @@ def f_fault_localization(params):
 
     print('fitness =', avg_fitness)
 
-    return avg_fitness,
+    return avg_fitness
 
 def main():
     args = list()

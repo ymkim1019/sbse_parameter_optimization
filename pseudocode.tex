@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\begin{document}
+	
+	% Insert the algorithm
+	\begin{algorithm}
+		\caption{Genetic algorithm guided by Bayesian Optimization}
+		\label{array-sum}
+		\begin{algorithmic}[1]
+			\State {Initialize P(0) randomly}
+			\For {$t=0$ to MaxGenerations}
+			\State {Evaluate population P(t)}
+			\State {Update the probabilistic model}
+			\State {Selection()}
+			\State {Crossover()}
+			\State {Mutate()}
+			\State {Form $P(t+1)$}
+			\State {Get probability of improvement for each individual in $P(t+1)$}
+			\State {Remove $N*r_i$ individuals based on probability of improvement}
+			\State {Add $N*r_i$ elites from $P(t)$ to $P(t+1)$ where $r_i$ is the elitism ratio}
+			\EndFor
+		\end{algorithmic}
+	\end{algorithm}
+	
+\end{document}

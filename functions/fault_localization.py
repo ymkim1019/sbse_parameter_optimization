@@ -146,10 +146,11 @@ def evalSymbReg(individual, toolbox, ea, files, indexes):
         df = pd.read_csv(files[idx])
         data = df.values
         func = toolbox.compile(expr=individual)
-        ranks = rankdata([func(*each[1:42]) for each in data[:]], method='max')
-        fault_indexes = numpy.where(data[:, 42] == 1)
+        ranks = rankdata([func(*each[1:42]) for each in data[:]], method='average')
+        n_data = len(ranks)
+        fault_indexes = numpy.where(data[:, 42] == 1)[0]
         num_of_faults += len(fault_indexes)
-        sum_fitness += numpy.sum([ranks[i] for i in fault_indexes])
+        sum_fitness += numpy.sum([(n_data - ranks[i]) / n_data for i in fault_indexes])
 
     return sum_fitness/num_of_faults,
 
@@ -167,7 +168,7 @@ def f_fault_localization(params):
     :rtype: float
     """
     num_of_features = 41
-    num_of_generations = 100
+    num_of_generations = 1
     num_of_samples = 5
 
     max_tree_depth = params[0]
@@ -177,7 +178,7 @@ def f_fault_localization(params):
     mutpb = params[4]
 
     # dataset
-    dataset_path = os.getcwd() + '\\fluccs_data\\'
+    dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
     extension = 'csv'
     files = [i for i in glob.glob(dataset_path + '*.{}'.format(extension))]
     # randomly sample
@@ -196,8 +197,8 @@ def f_fault_localization(params):
     pset.addPrimitive(protectedSqrt, 1)
 
     # The goal is to minimize a value from the objective function
-    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-    creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
+    creator.create("FitnessMax", base.Fitness, weights=(1.0,)) # higher is better
+    creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMax)
 
     ea = eaSimpleCustom()
 
@@ -237,13 +238,16 @@ def f_fault_localization(params):
     for f in files:
         df = pd.read_csv(f)
         data = df.values
-        ranks = rankdata([func(*each[1:42]) for each in data[:]], method='max')
-        fault_indexes = numpy.where(data[:, 42] == 1)
+        ranks = rankdata([func(*each[1:42]) for each in data[:]], method='average')
+        n_data = len(ranks)
+        fault_indexes = numpy.where(data[:, 42] == 1)[0]
         num_of_faults += len(fault_indexes)
-        sum_fitness += numpy.sum([ranks[i] for i in fault_indexes])
+        sum_fitness += numpy.sum([(n_data-ranks[i])/n_data for i in fault_indexes])
     avg_fitness = sum_fitness/num_of_faults
 
-    return avg_fitness,
+    print('fitness =', avg_fitness)
+
+    return avg_fitness
 
 def main():
     args = list()

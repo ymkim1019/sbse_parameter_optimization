@@ -16,11 +16,11 @@ def evaluate(f,samples):
 
 for i in range(10):
     f = open(str.format("fault_localization_bo_{}.txt", i), 'w')
-    gpo = GPoptimizer(configs,f_mnist)
+    gpo = GPoptimizer(configs,f_fault_localization)
     best_score = 0
     initial_samples = gpo.random_sample(5)
     for j in range(20):
-        scores = evaluate(f_mnist,initial_samples)
+        scores = evaluate(f_fault_localization,initial_samples)
         if best_score < max(scores):
             best_score = max(scores)
 

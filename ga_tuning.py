@@ -28,10 +28,12 @@ class GAtuning():
         # self.crossover_rate =
         self.mutation_rate = 0.05
         self.elite = int(self.population * 0.4)
+        self.rank_param = 1.5 # 1 <= s <= 2
         
         # selection
         self.entire = 0
         self.best = -inf
+        self.rank = []
 
     def generation(self): # it takes number of generation and number of population
         num = self.generation_number
@@ -51,7 +53,7 @@ class GAtuning():
 
             if self.basian:
                 self.gpo.update_model(self.samples, self.result)
-            self.selection()
+            self.linear_rank_selection()
             self.crossover()
             self.mutation()
             if self.basian:
@@ -94,6 +96,8 @@ class GAtuning():
             self.entire += fit
             if fit > self.best:
                 self.best = fit
+        seq = sorted(self.result)
+        self.rank = [seq.index(v) for v in x]
 
     def selection(self):
         if self.basian:
@@ -106,6 +110,23 @@ class GAtuning():
         for i in range(len(self.result)):
             x = t
             p = (self.result[i] / self.entire) * numParent # not use windowing
+            t += p
+            prob.append(bound(x, t))
+        self.parent = self.stochastic(numParent, rand, prob)
+
+    def linear_rank_selection(self):
+        if self.basian:
+            numParent = self.population
+        else:
+            numParent = self.population - self.elite
+        rand = random.random()
+        prob = probSet()
+        t = 0
+        k1 = (2-s)/self.population
+        k2 = (s-1)/sum(self.rank)
+        for i in range(len(self.rank)):
+            x = t
+            p = (k1 + k2*self.rank[i]) * numParent
             t += p
             prob.append(bound(x, t))
         self.parent = self.stochastic(numParent, rand, prob)
@@ -145,8 +166,9 @@ class GAtuning():
         sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))] # big number front
         sorted_samples.reverse()
         self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
+        assert len(self.samples) == self.population
 
-    def elitisim(self):
+    def elitism(self):
         sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))] # big number front
         sorted_samples.reverse()
         self.samples = self.children + sorted_samples[:self.elite]

@@ -33,64 +33,7 @@ class eaSimpleCustom:
 
     def do(self, population, toolbox, cxpb, mutpb, ngen, stats=None,
                  halloffame=None, verbose=__debug__):
-        """This algorithm reproduce the simplest evolutionary algorithm as
-        presented in chapter 7 of [Back2000]_.
 
-        :param population: A list of individuals.
-        :param toolbox: A :class:`~deap.base.Toolbox` that contains the evolution
-                        operators.
-        :param cxpb: The probability of mating two individuals.
-        :param mutpb: The probability of mutating an individual.
-        :param ngen: The number of generation.
-        :param stats: A :class:`~deap.tools.Statistics` object that is updated
-                      inplace, optional.
-        :param halloffame: A :class:`~deap.tools.HallOfFame` object that will
-                           contain the best individuals, optional.
-        :param verbose: Whether or not to log the statistics.
-        :returns: The final population
-        :returns: A class:`~deap.tools.Logbook` with the statistics of the
-                  evolution
-
-        The algorithm takes in a population and evolves it in place using the
-        :meth:`varAnd` method. It returns the optimized population and a
-        :class:`~deap.tools.Logbook` with the statistics of the evolution. The
-        logbook will contain the generation number, the number of evalutions for
-        each generation and the statistics if a :class:`~deap.tools.Statistics` is
-        given as argument. The *cxpb* and *mutpb* arguments are passed to the
-        :func:`varAnd` function. The pseudocode goes as follow ::
-
-            evaluate(population)
-            for g in range(ngen):
-                population = select(population, len(population))
-                offspring = varAnd(population, toolbox, cxpb, mutpb)
-                evaluate(offspring)
-                population = offspring
-
-        As stated in the pseudocode above, the algorithm goes as follow. First, it
-        evaluates the individuals with an invalid fitness. Second, it enters the
-        generational loop where the selection procedure is applied to entirely
-        replace the parental population. The 1:1 replacement ratio of this
-        algorithm **requires** the selection procedure to be stochastic and to
-        select multiple times the same individual, for example,
-        :func:`~deap.tools.selTournament` and :func:`~deap.tools.selRoulette`.
-        Third, it applies the :func:`varAnd` function to produce the next
-        generation population. Fourth, it evaluates the new individuals and
-        compute the statistics on this population. Finally, when *ngen*
-        generations are done, the algorithm returns a tuple with the final
-        population and a :class:`~deap.tools.Logbook` of the evolution.
-
-        .. note::
-
-            Using a non-stochastic selection method will result in no selection as
-            the operator selects *n* individuals from a pool of *n*.
-
-        This function expects the :meth:`toolbox.mate`, :meth:`toolbox.mutate`,
-        :meth:`toolbox.select` and :meth:`toolbox.evaluate` aliases to be
-        registered in the toolbox.
-
-        .. [Back2000] Back, Fogel and Michalewicz, "Evolutionary Computation 1 :
-           Basic Algorithms and Operators", 2000.
-        """
         logbook = tools.Logbook()
         logbook.header = ['gen', 'nevals'] + (stats.fields if stats else [])
 
@@ -156,8 +99,7 @@ def evalSymbReg(individual, toolbox, ea, files, indexes):
 
 def f_fault_localization(params):
     """
-    maximum_tree_depth : int, (2 ~ 15)
-    population_size : int, (20 ~ 100)
+    maximum_tree_depth : int, (2 ~ 10)
     elitism_size : int, (0 ~ 15)
     cxpb : float, (0 ~ 1)
     mutpb : float, (0 ~ 1)
@@ -168,14 +110,14 @@ def f_fault_localization(params):
     :rtype: float
     """
     num_of_features = 41
-    num_of_generations = 1
+    num_of_generations = 10
     num_of_samples = 5
+    population_size = 20
 
     max_tree_depth = params[0]
-    population_size = params[1]
-    elitism_size = params[2]
-    cxpb = params[3]
-    mutpb = params[4]
+    elitism_size = params[1]
+    cxpb = params[2]
+    mutpb = params[3]
 
     # dataset
     dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
@@ -253,13 +195,11 @@ def main():
     args = list()
     # from FLUCCS
     # args.append(8) # max_tree_depth
-    # args.append(49) # population_size
     # args.append(8) # elitism_size
     # args.append(1.0) # cxpb
     # args.append(0.1) # mutpb
 
     args.append(8)  # max_tree_depth
-    args.append(30)  # population_size
     args.append(8)  # elitism_size
     args.append(1.0)  # cxpb
     args.append(0.1)  # mutpb

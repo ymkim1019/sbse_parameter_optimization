@@ -63,11 +63,12 @@ class GAtuning():
                 self.elitism()
         self.evaluation()
         best_score = max([best_score] + self.result)
-        for i in range(self.result):
-            data = str.format('{}   {}  {}  {}\n', self.round, self.generation_number * self.population + i
+        for i in range(len(self.result)):
+            data = str.format('{}   {}  {}  {}\n', self.round, gen * self.population + i
                               , self.result[i], best_score)
-            self.log_file.write(data)
-            self.log_file.flush()
+            if self.log_file is not None:
+                self.log_file.write(data)
+                self.log_file.flush()
             print(data)
 
         return self.result, self.samples

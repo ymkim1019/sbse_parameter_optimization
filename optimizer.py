@@ -36,6 +36,7 @@ def main(args):
     # log file
     now = datetime.datetime.now()
     f = open(str.format("{}_{}_{}_{}_{}.txt", args.f, args.algo, now.day, now.hour, now.minute), 'w')
+    f.write(str.format('{}  [}  {}  {}\n', 'round', 'i', 'fitness', 'best_fitness'))
 
     if args.algo == 'BO':
         for i in range(args.n_evals):
@@ -45,15 +46,19 @@ def main(args):
             cnt = 0
             while True:
                 n = gp_batch_size if (args.n_samples - cnt) >= gp_batch_size else args.n_samples - cnt
-                cnt += n
                 samples = gpo.random_sample(n)
                 scores = evaluate(fitness_func, samples)
                 if best_score < max(scores):
                     best_score = max(scores)
 
-                data = str.format('{}   {}  {}\n', i, cnt, best_score)
-                f.write(data)
-                print(data)
+                for k in range(n):
+                    data = str.format('{}   {}  {}  {}\n', i, cnt+k, scores[k], best_score)
+                    f.write(data)
+                    f.flush()
+                    print(data)
+
+                cnt += n
+
                 gpo.update_model(samples, scores)
                 if cnt == args.n_samples:
                     break

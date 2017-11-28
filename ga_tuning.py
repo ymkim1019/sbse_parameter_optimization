@@ -96,7 +96,10 @@ class GAtuning():
                 self.best = fit
 
     def selection(self):
-        numParent = self.population
+        if self.basian:
+            numParent = self.population
+        else:
+            numParent = self.population - self.elite
         rand = random.random()
         prob = probSet()
         t = 0
@@ -144,14 +147,10 @@ class GAtuning():
         self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
 
     def elitisim(self):
-        result = []
-        for sample in self.children:
-            fit = self.fitness_ftn(sample)
-            result.append(fit)
-        sorted_children = [x for _,x in sorted(zip(result,self.children))] # small number front
         sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))] # big number front
         sorted_samples.reverse()
-        self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
+        self.samples = self.children + sorted_samples[:self.elite]
+        assert len(self.samples) == self.population
 
 
         

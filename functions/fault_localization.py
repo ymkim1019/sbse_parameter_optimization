@@ -5,6 +5,7 @@ import numpy
 import os
 import glob
 import pandas as pd
+import sys
 from scipy.stats import rankdata
 
 from deap import algorithms
@@ -121,9 +122,12 @@ def f_fault_localization(params):
 
     # dataset
     # windows
-    dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
+    is_windows = sys.platform.startswith('win')
+    if is_windows:
+        dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
     # linux
-    #dataset_path = os.getcwd() + '/functions/fluccs_data/'
+    else:
+        dataset_path = os.getcwd() + '/functions/fluccs_data/'
     extension = 'csv'
     files = [i for i in glob.glob(dataset_path + '*.{}'.format(extension))]
     # randomly sample

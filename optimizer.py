@@ -51,7 +51,7 @@ def main(args):
                 if best_score < max(scores):
                     best_score = max(scores)
 
-                data = str.format('{}   {}  {}', i, cnt, best_score)
+                data = str.format('{}   {}  {}\n', i, cnt, best_score)
                 f.write(data)
                 print(data)
                 gpo.update_model(samples, scores)

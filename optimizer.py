@@ -28,7 +28,7 @@ def main(args):
     elif args.f == 'f_fault_localization':
         fitness_func = f_fault_localization
         configs = [['int', 2, 15],  # maximum_tree_depth
-                    ['int', 0, 5],  # elitism_size
+                    ['int', 1, 5],  # elitism_size
                     ['float', 0, 1],  # cxpb
                     ['float', 0, 1],  # mutpb
                     ]

@@ -1,0 +1,19 @@
+
+# submit the job to condor server
+condor_submit condor.submit
+
+# list current job list in the queue
+condor_q
+
+# list current status on each condor machine
+condor_status -all
+
+# print current output of specific job with (JOB_NUMBER)
+condor_tail -f (JOB_NUMBER)
+
+# remove all jobs in the queue list
+condor_rm -all
+
+# remove specific job with (JOB_NUMBER)
+condor_rm (JOB_NUMBER)
+

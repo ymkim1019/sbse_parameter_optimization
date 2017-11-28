@@ -1,7 +1,8 @@
 import argparse
-from blackbox import f_mnist
+import datetime
 from basian_opt import GPoptimizer
 from functions.fault_localization import f_fault_localization
+from functions.mnist import f_mnist
 
 def evaluate(f,samples):
     scores = []
@@ -15,7 +16,7 @@ def main(args):
     fitness_func = None
     gp_batch_size = 5
 
-    if args.f == 'f_minist':
+    if args.f == 'f_mnist':
         fitness_func = f_mnist
         configs = [['int', 32, 128],  # conv_output_size
                     ['float', 0.1, 0.99],  # conv_dropout_rate
@@ -32,10 +33,13 @@ def main(args):
                     ['float', 0, 1],  # mutpb
                     ]
 
+    # log file
+    now = datetime.datetime.now()
+    f = open(str.format("{}_{}_{}_{}_{}.txt", args.f, args.algo, now.day, now.hour, now.minute), 'w')
+
     if args.algo == 'BO':
         for i in range(args.n_evals):
-            # log file
-            f = open(str.format("{}_{}_{}.txt", args.f, args.algo, i), 'w')
+
             gpo = GPoptimizer(configs, fitness_func)
             best_score = 0
             cnt = 0
@@ -47,7 +51,7 @@ def main(args):
                 if best_score < max(scores):
                     best_score = max(scores)
 
-                data = str.format('{}  {}', (j + 1) * 5, best_score)
+                data = str.format('{}   {}  {}', i, (j + 1) * 5, best_score)
                 f.write(data)
                 print(data)
                 gpo.update_model(samples, scores)
@@ -55,11 +59,12 @@ def main(args):
                     break
 
             print('best fitness =', best_score)
-            f.close()
+
+        f.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--f", type=str, choices=['f_minist', 'f_fault_localization'])
+    parser.add_argument("-f", "--f", type=str, choices=['f_mnist', 'f_fault_localization'])
     parser.add_argument("-algo", "--algo", type=str, choices=['BO','GA','GABO'])
     parser.add_argument("-n_samples", "--n_samples", default=100, type=int)
     parser.add_argument("-n_evals", "-n_evals", default=5, type=int)
@@ -69,4 +74,4 @@ if __name__ == "__main__":
     main(args)
 
     # e.g.
-    # python optimizer.py -f f_fault_localization -algo BO -n_samples 100 -n_evals 20
+    # python optimizer.py -f f_fault_localization -algo BO -n_samples 100 -n_evals 10

@@ -42,7 +42,10 @@ def f_mnist(params):
     img_rows, img_cols = 28, 28
 
     # the data, shuffled and split between train and test sets
+    # ********** if there is an error in importing mnist, use below lines
     # import gzip
+    # import sys
+    # import pickle
     # f = gzip.open('mnist.pkl.gz', 'rb')
     # if sys.version_info < (3,):
     #     data = pickle.load(f)

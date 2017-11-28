@@ -17,23 +17,22 @@ def f_mnist(params):
     num_of_dense_layers : int, (2 ~ 5)
     dense_output_size : int, (32 ~ 128)
     dense_drop_out_rate : float, (0.1 ~ 0.99)
-    learning_rate : float, [0.1, 0.01, 0.001, 0.0001]
-
+    learning_rate : float, (0.1, 0.01, 0.001, 0.0001)
     :param params: list of parameters
     :type params: list
     :return: fitness
     :rtype: float
     """
 
-    num_of_conv_layers = params[0]
-    conv_kernel_size = params[1]
-    conv_output_size = params[2]
-    conv_dropout_rate = params[3]
-    maxpooling_size = params[4]
-    num_of_dense_layers = params[5]
-    dense_output_size = params[6]
-    dense_drop_out_rate = params[7]
-    learning_rate = params[8]
+    num_of_conv_layers = 3
+    conv_kernel_size = 3
+    conv_output_size = params[0]
+    conv_dropout_rate = params[1]
+    maxpooling_size = params[2]
+    num_of_dense_layers = params[3]
+    dense_output_size = params[4]
+    dense_drop_out_rate = params[5]
+    learning_rate = params[6]
 
     batch_size = 128
     num_classes = 10
@@ -43,6 +42,18 @@ def f_mnist(params):
     img_rows, img_cols = 28, 28
 
     # the data, shuffled and split between train and test sets
+    # ********** if there is an error in importing mnist, use below lines
+    # import gzip
+    # import sys
+    # import pickle
+    # f = gzip.open('mnist.pkl.gz', 'rb')
+    # if sys.version_info < (3,):
+    #     data = pickle.load(f)
+    # else:
+    #     data = pickle.load(f, encoding='bytes')
+    # f.close()
+    # (x_train, y_train), (x_test, y_test) = data
+
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
     if K.image_data_format() == 'channels_first':
@@ -92,8 +103,4 @@ def f_mnist(params):
     score = model.evaluate(x_test, y_test, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
-    return score[1] * 100
-
-if __name__ == "__main__":
-    params = [2, 3, 64, 0.25, 2, 2, 128, 0.5, 0.0001]
-    f_mnist(params)
+    return score[1]

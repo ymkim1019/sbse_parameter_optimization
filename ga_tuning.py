@@ -42,7 +42,7 @@ class GAtuning():
             self.evaluation()
 
             best_score = max([best_score] + self.result)
-            for i in range(self.result):
+            for i in range(len(self.result)):
                 data = str.format('{}   {}  {}  {}\n', self.round, self.generation_number * self.population + i
                                   , self.result[i], best_score)
                 self.log_file.write(data)
@@ -88,6 +88,7 @@ class GAtuning():
         self.entire = 0
         self.best = -inf
         for sample in self.samples:
+            print(sample)
             fit = self.fitness_ftn(sample)
             self.result.append(fit)
             self.entire += fit

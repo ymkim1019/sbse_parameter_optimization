@@ -17,6 +17,7 @@ def main(args):
     configs = None
     fitness_func = None
     gp_batch_size = 5
+    ga_population_size = 10
 
     if args.f == 'f_mnist':
         fitness_func = f_mnist
@@ -68,12 +69,14 @@ def main(args):
             print('best fitness =', best_score)
     elif args.algo == 'GABO':
         for i in range(args.n_evals):
-            ga = GAtuning(configs, 10, math.ceil(args.n_samples / 10.0), fitness_func, True, f, i)
+            ga = GAtuning(configs, ga_population_size, math.ceil(args.n_samples / ga_population_size), fitness_func
+                          , True, f, i)
             result, samples = ga.generation()
             print('best fitness =', max(result))
     elif args.algo == 'GA':
         for i in range(args.n_evals):
-            ga = GAtuning(configs, 10, math.ceil(args.n_samples / 10.0), fitness_func, False, f, i)
+            ga = GAtuning(configs, ga_population_size, math.ceil(args.n_samples / ga_population_size), fitness_func
+                          , False, f, i)
             result, samples = ga.generation()
             print('best fitness =', max(result))
 

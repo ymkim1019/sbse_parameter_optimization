@@ -37,7 +37,7 @@ def run (arglist):
 
     # There is some runtime error if fitness result is 1
     result = exec_evosuite_n_get_fitness(*args)
-    return result
+    return float(result)
 
 
 if __name__ == "__main__":
@@ -53,4 +53,4 @@ if __name__ == "__main__":
 
     result = run(args)
 
-    print("fitness : ", result)
+    print("fitness : ", str(result))

@@ -100,7 +100,7 @@ def evalSymbReg(individual, toolbox, ea, files, indexes):
 def f_fault_localization(params):
     """
     maximum_tree_depth : int, (2 ~ 10)
-    elitism_size : int, (0 ~ 15)
+    elitism_size : int, (1 ~ 15)
     cxpb : float, (0 ~ 1)
     mutpb : float, (0 ~ 1)
 
@@ -120,7 +120,10 @@ def f_fault_localization(params):
     mutpb = params[3]
 
     # dataset
+    # windows
     dataset_path = os.getcwd() + '\\functions\\fluccs_data\\'
+    # linux
+    #dataset_path = os.getcwd() + '/functions/fluccs_data/'
     extension = 'csv'
     files = [i for i in glob.glob(dataset_path + '*.{}'.format(extension))]
     # randomly sample

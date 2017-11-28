@@ -4,14 +4,6 @@ import random
 import ga_evaluation as evo
 from math import inf
 
-configs = [['int',32,128],    #conv_output_size
-           ['float',0.1,0.99],  #conv_dropout_rate
-           ['int',2,4],  #maxpooling_size
-           ['int',2,5],   #num_of_dense_layers
-           ['int',32,128],    #dense_output_size
-           ['float',0.1,0.99],  #dense_drop_out_rate
-           ['float',0.0001,0.001]]  #learning_rate
-
 class GAtuning():
     def __init__(self, parameter_conf):
         self.configs = parameter_conf
@@ -40,8 +32,8 @@ class GAtuning():
             self.crossover()
             self.mutation()
             self.basian_elitism()
-        self.result = self.evaluation()
-        # return # best
+        self.evaluation()
+        return self.result, self.samples
 
     def initialization(self, pop): # it takes number of population
         self.population = pop
@@ -57,19 +49,18 @@ class GAtuning():
             samples.append(sample)
         return samples
 
-    def evaluation():
+    def evaluation(self): # XXX if your configs are changed then you have to changed ga_evaluation code -> this will be updated after
         self.result = []
         self.entire = 0
         self.best = -inf
         for sample in self.samples:
-            fit = evo.run(sample)
+            fit = float(evo.run(sample))
             self.result.append(fit)
             self.entire += fit
             if fit > self.best:
                 self.best = fit
 
-
-    def selection():
+    def selection(self):
         numParent = self.population
         rand = random.random()
         prob = probSet()
@@ -85,10 +76,10 @@ class GAtuning():
         parent = []
         for i in range(nump):
             isini = prob.isin(rand + i) 
-            parent.insert(randint(0,len(p)),self.samples[isini]) # prevent determined permutation
+            parent.insert(random.randint(0,len(parent)),self.samples[isini]) # prevent determined permutation
         return parent
 
-    def crossover():
+    def crossover(self):
         l = len(self.parent)
         self.children = []
         for i in range(0,len(self.parent),2):
@@ -99,27 +90,25 @@ class GAtuning():
             self.children.append(self.parent[i][0:cp] + self.parent[i+1][cp:])
             self.children.append(self.parent[i+1][0:cp] + self.parent[i][cp:])
 
-    def mutation():
+    def mutation(self):
         for i in range(len(self.children)):
             for j in range(len(self.children[i])):
-                if random.random < self.mutation_rate:
+                if random.random() < self.mutation_rate:
                     if self.configs[j][0] == 'int':
                         value = random.randrange(self.configs[j][1],self.configs[j][2]+1)
                     elif self.configs[j][0] == 'float':
                         value = random.random() * (self.configs[j][2] - self.configs[j][1]) + self.configs[j][1]
                     self.children[i][j] = value
 
-    def basian_elitism():
-        prob = gpo.compute_PI(self.children)
+    def basian_elitism(self):
+        prob = self.gpo.compute_PI(self.children)
+        prob = list(prob)
         sorted_children = [x for _,x in sorted(zip(prob,self.children))] # small number front
-        sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))].reverse() # big number front
+        sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))] # big number front
+        sorted_samples.reverse()
         self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
 
         
-
-            
-
-
 # Utils--------------------------------------------------------------
 class probSet:
     def __init__(self):
@@ -145,3 +134,9 @@ class bound:
         else:
             return False
 
+if __name__ == "__main__":
+    configs = [['float',0,1.0],    # mutation_rate
+               ['float',0,1.0],  # crossover_rate
+               ['int',1,4]]  # selection_function
+    ga = GAtuning(configs)
+    print (ga.generation(2,2))

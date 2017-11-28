@@ -3,6 +3,8 @@ import datetime
 from basian_opt import GPoptimizer
 from functions.fault_localization import f_fault_localization
 from functions.mnist import f_mnist
+from ga_tuning import GAtuning
+import math
 
 def evaluate(f,samples):
     scores = []
@@ -36,7 +38,7 @@ def main(args):
     # log file
     now = datetime.datetime.now()
     f = open(str.format("{}_{}_{}_{}_{}.txt", args.f, args.algo, now.day, now.hour, now.minute), 'w')
-    f.write(str.format('{}  [}  {}  {}\n', 'round', 'i', 'fitness', 'best_fitness'))
+    f.write(str.format('{}  {}  {}  {}\n', 'round', 'i', 'fitness', 'best_fitness'))
 
     if args.algo == 'BO':
         for i in range(args.n_evals):
@@ -64,8 +66,18 @@ def main(args):
                     break
 
             print('best fitness =', best_score)
+    elif args.algo == 'GABO':
+        for i in range(args.n_evals):
+            ga = GAtuning(configs, 10, math.ceil(args.n_samples / 10.0), fitness_func, True, f, i)
+            result, samples = ga.generation()
+            print('best fitness =', max(result))
+    elif args.algo == 'GA':
+        for i in range(args.n_evals):
+            ga = GAtuning(configs, 10, math.ceil(args.n_samples / 10.0), fitness_func, False, f, i)
+            result, samples = ga.generation()
+            print('best fitness =', max(result))
 
-        f.close()
+    f.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

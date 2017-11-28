@@ -6,13 +6,15 @@ from math import inf
 
 class GAtuning():
     # parameter_conf : list of list, pop : number, gennum : number, fitness_ftn : list -> number, basian : boolean 
-    def __init__(self, parameter_conf, pop, gennum, fitness_ftn, basian):
+    def __init__(self, parameter_conf, pop, gennum, fitness_ftn, basian, log_file = None, round = None):
         # initialize
         self.configs = parameter_conf
         self.population = pop
         self.generation_number = gennum
         self.fitness_ftn = fitness_ftn
         self.basian = basian
+        self.log_file = log_file
+        self.round = round
 
         # generation
         self.samples = []
@@ -35,8 +37,18 @@ class GAtuning():
         num = self.generation_number
         pop = self.population
         self.samples = self.initialization(pop)
+        best_score = 0
         for _ in range(num):
-            self.evaluation()     
+            self.evaluation()
+
+            best_score = max([best_score] + self.result)
+            for i in range(self.result):
+                data = str.format('{}   {}  {}  {}\n', self.round, self.generation_number * self.population + i
+                                  , self.result[i], best_score)
+                self.log_file.write(data)
+                self.log_file.flush()
+                print(data)
+
             if self.basian:
                 self.gpo.update_model(self.samples, self.result)
             self.selection()
@@ -47,6 +59,14 @@ class GAtuning():
             else:
                 self.elitism()
         self.evaluation()
+        best_score = max([best_score] + self.result)
+        for i in range(self.result):
+            data = str.format('{}   {}  {}  {}\n', self.round, self.generation_number * self.population + i
+                              , self.result[i], best_score)
+            self.log_file.write(data)
+            self.log_file.flush()
+            print(data)
+
         return self.result, self.samples
 
     def initialization(self, pop): # it takes number of population

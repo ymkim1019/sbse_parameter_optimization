@@ -99,7 +99,7 @@ class GAtuning():
             if fit > self.best:
                 self.best = fit
         seq = sorted(self.result)
-        self.rank = [seq.index(v) for v in x]
+        self.rank = [seq.index(v) for v in self.result]
 
     def selection(self):
         if self.basian:
@@ -124,8 +124,8 @@ class GAtuning():
         rand = random.random()
         prob = probSet()
         t = 0
-        k1 = (2-s)/self.population
-        k2 = (s-1)/sum(self.rank)
+        k1 = (2-self.rank_param)/self.population
+        k2 = (self.rank_param-1)/sum(self.rank)
         for i in range(len(self.rank)):
             x = t
             p = (k1 + k2*self.rank[i]) * numParent

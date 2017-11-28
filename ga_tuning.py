@@ -5,14 +5,22 @@ import ga_evaluation as evo
 from math import inf
 
 class GAtuning():
-    def __init__(self, parameter_conf):
+    # parameter_conf : list of list, pop : number, gennum : number, fitness_ftn : list -> number, basian : boolean 
+    def __init__(self, parameter_conf, pop, gennum, fitness_ftn, basian):
+        # initialize
         self.configs = parameter_conf
-        self.population = 0
+        self.population = pop
+        self.generation_number = gennum
+        self.fitness_ftn = fitness_ftn
+        self.basian = basian
+
+        # generation
         self.samples = []
         self.result = []
         self.parent = []
         self.children = []
-        self.gpo = GPoptimizer(parameter_conf, f_mnist)
+        if self.basian:
+            self.gpo = GPoptimizer(parameter_conf, self.fitness_ftn) # XXX
 
         # parameter
         # self.crossover_rate =
@@ -23,15 +31,21 @@ class GAtuning():
         self.entire = 0
         self.best = -inf
 
-    def generation(self, num, pop): # it takes number of generation and number of population
+    def generation(self): # it takes number of generation and number of population
+        num = self.generation_number
+        pop = self.population
         self.samples = self.initialization(pop)
         for _ in range(num):
             self.evaluation()     
-            self.gpo.update_model(self.samples, self.result)
+            if self.basian:
+                self.gpo.update_model(self.samples, self.result)
             self.selection()
             self.crossover()
             self.mutation()
-            self.basian_elitism()
+            if self.basian:
+                self.basian_elitism()
+            else:
+                self.elitism()
         self.evaluation()
         return self.result, self.samples
 
@@ -54,7 +68,7 @@ class GAtuning():
         self.entire = 0
         self.best = -inf
         for sample in self.samples:
-            fit = float(evo.run(sample))
+            fit = self.fitness_ftn(sample)
             self.result.append(fit)
             self.entire += fit
             if fit > self.best:
@@ -108,6 +122,17 @@ class GAtuning():
         sorted_samples.reverse()
         self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
 
+    def elitisim(self):
+        result = []
+        for sample in self.children:
+            fit = self.fitness_ftn(sample)
+            result.append(fit)
+        sorted_children = [x for _,x in sorted(zip(result,self.children))] # small number front
+        sorted_samples = [x for _,x in sorted(zip(self.result, self.samples))] # big number front
+        sorted_samples.reverse()
+        self.samples = sorted_children[self.elite:] + sorted_samples[:self.elite]
+
+
         
 # Utils--------------------------------------------------------------
 class probSet:
@@ -138,5 +163,5 @@ if __name__ == "__main__":
     configs = [['float',0,1.0],    # mutation_rate
                ['float',0,1.0],  # crossover_rate
                ['int',1,4]]  # selection_function
-    ga = GAtuning(configs)
-    print (ga.generation(2,2))
+    ga = GAtuning(configs,2,2,evo.run,True)
+    print (ga.generation())

@@ -38,12 +38,12 @@ class GAtuning():
         pop = self.population
         self.samples = self.initialization(pop)
         best_score = 0
-        for _ in range(num):
+        for gen in range(num):
             self.evaluation()
 
             best_score = max([best_score] + self.result)
             for i in range(len(self.result)):
-                data = str.format('{}   {}  {}  {}\n', self.round, self.generation_number * self.population + i
+                data = str.format('{}   {}  {}  {}\n', self.round, gen * self.population + i
                                   , self.result[i], best_score)
                 self.log_file.write(data)
                 self.log_file.flush()
